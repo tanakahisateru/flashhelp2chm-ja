@@ -1,0 +1,61 @@
+body table {
+ font-size:10pt;
+}
+pre {
+  margin-top    : 2px;
+  margin-bottom : 2px;
+  white-space: normal;
+  border-collapse: collapse;
+}
+
+.main {
+  margin-bottom:32px;
+  width : 100%;
+}
+.title {
+  font-weight:bold;
+  width : 100%;
+}
+.literal{
+  font-family: monospace;
+}
+.emphasis {
+  color:green;
+}
+.programlisting {
+}
+
+td.name {
+  font-weight:bold;
+  background-color:#DDDDDD;
+}
+td.compatibility {
+  text-align: right;
+  background-color:#DDDDDD;
+  position: relative;
+  float:right;
+}
+td.usage{
+  padding-bottom : 8px;
+}
+td.requirements {
+  text-align: right;
+  color:green;
+  position: relative;
+  float:right;
+}
+td.description{
+}
+
+td.divider {
+  padding:4px;
+}
+td.clearseparation {
+  font-size:4px;
+}
+td.example {
+}
+td.objectmodelreference {
+}
+td.value {
+}
