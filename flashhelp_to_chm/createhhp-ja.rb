@@ -75,8 +75,7 @@ def formatTopicItem(name, href)
 	return out
 end
 
-#BUG: HTML Help Workshop generated format is not suit....
-def buggy_formatIndexItem(name, details)
+def formatIndexItem(name, details)
 	out = '<LI><OBJECT type="text/sitemap">'
 	out += sprintf('<param name="Name" value="%s">', name)
 	details.each() do |det|
@@ -86,7 +85,7 @@ def buggy_formatIndexItem(name, details)
 	out += "</OBJECT>"
 end
 
-def formatIndexItem(name, details)
+def __notinuse__formatIndexItem(name, details)
 	out = ""
 	details.each() do |det|
 		out += '<LI><OBJECT type="text/sitemap">'
