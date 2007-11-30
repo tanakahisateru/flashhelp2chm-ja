@@ -6,11 +6,12 @@ ruby preprocess-ja.rb "C:\Program Files\Macromedia\Dreamweaver 8\Configuration\C
 copy /Y josh.css .\html\HTML
 copy /Y josh.css .\html\CSS
 copy /Y josh.css .\html\JavaScript
-echo .\html\JavaScript\Reference.xml‚É‚Í’v–½“I‚È–â‘è‚ª‚ ‚é‚Ì‚ÅC³‚µ‚Ä‚­‚¾‚³‚¢
-echo XML‘®‚Ì”j‘¹ /book/topic/subtopic(name="frame")
-echo XML‘®‚Ì”j‘¹ /book/topic/subtopic(name="rules")
-pause
-echo –{“–‚É‚Å‚«‚Ü‚µ‚½‚©
-pause
+rem --‚±‚ÌC³‚ğ‹­§“I‚ÉŒŸõ’uŠ·‚Ås‚Á‚½--
+rem echo .\html\JavaScript\Reference.xml‚É‚Í’v–½“I‚È–â‘è‚ª‚ ‚é‚Ì‚ÅC³‚µ‚Ä‚­‚¾‚³‚¢
+rem echo XML‘®‚Ì”j‘¹ /book/topic/subtopic(name="frame")
+rem echo XML‘®‚Ì”j‘¹ /book/topic/subtopic(name="rules")
+rem pause
+rem echo –{“–‚É‚Å‚«‚Ü‚µ‚½‚©
+rem pause
 ruby createhhp-ja.rb ./html
 "C:\Program Files\HTML Help Workshop\hhc.exe" dwref.hhp

@@ -10,15 +10,17 @@ def convertFile(orgpath, targetpath)
 		fin = open(orgpath, 'r')
 		fout = open(targetpath, 'w')
 		
-		fin.each("\n") do |text|
-			t = text.tosjis().chomp()
-			t.gsub!(/\<div(\s+[\w]+\s*\=\s*\"?.*?\"?)*\s+id\s*\=\s*\"(.*?)\"/) do |m|
-				nm = $2
-				nm.gsub!("ÅA", ",")
-				'<a name="' + nm + '">' + m
-			end
-			fout.write(t+"\n")
-		end
+        text = fin.read()
+		text.gsub!("\r", "\n") #avoiding Ruby regexp broken... html has complex return code(0a/0d/0a0d) in same file 
+        text = text.kconv(Kconv::SJIS, Kconv::AUTO)
+        
+        t = text.gsub(/\<div(\s+[\w]+\s*\=\s*\"?.*?\"?)*\s+id\s*\=\s*\"(.*?)\"/) do |m|
+            nm = $2
+            nm.gsub!("ÅA", ",")
+            '<a name="' + nm + '">' + m
+        end
+        fout.write(t+"\n")
+        
 		fin.close()
 		fout.close()
 	elsif orgpath =~ /.*Reference\.xml$/ then
@@ -33,6 +35,11 @@ def convertFile(orgpath, targetpath)
 				nm.gsub!("ÅA", ",")
 				'id="' + nm + '"'
 			end
+            
+            #fix broken xml file(Why can Dreamweaver parse broken xml???????)
+            t.gsub!('<subtopic name="frame<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main" id="frame<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main"/>', '<subtopic name="frame" id="frame"/>')
+            t.gsub!('<subtopic name="rules<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main" id="rules<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main"/>', '<subtopic name="rules" id="rules"/>')
+           
 			fout.write(t+"\n")
 		end
 		fin.close()
