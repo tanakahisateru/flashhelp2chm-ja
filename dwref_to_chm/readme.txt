@@ -19,15 +19,15 @@
 2.html以下にコピーした各コンテンツフォルダにjosh.cssをコピー
 
 3.JavaScript/Reference.xmlには致命的な問題があるので手作業で修正
-
-	修正前
-	<subtopic name="frame<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main" id="frame<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main"/>
-	<subtopic name="rules<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main" id="rules<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main"/>
-
-	修正後
-	<subtopic name="frame" id="frame"/>
-	<subtopic name="rules" id="rules"/>
-
+************* この修正は強制的に行います。手作業は必要ありません。 **************
+#	修正前
+#	<subtopic name="frame<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main" id="frame<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main"/>
+#	<subtopic name="rules<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main" id="rules<table cellpadding="0" cellspacing="0" border="0" width="100%" class="main"/>
+#
+#	修正後
+#	<subtopic name="frame" id="frame"/>
+#	<subtopic name="rules" id="rules"/>
+#
 ほか、行っておいたほうがよい修正
 	禁止記号URIを避けるため、IDに記号を使う要素をまるごと削除しておくのが安全
 	<topic name="Operators" location="Operators.html" id="="> ... </topic>
