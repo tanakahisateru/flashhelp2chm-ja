@@ -40,9 +40,17 @@ def parseBooks(bookpath, file)
 	file.puts "\t" + formatTopicItem(title, "default.html", bookpath)
 	
 	file.puts "\t" + "<UL>"
-
-	clv = 0
+	
+	topics = []
 	book.elements.each("topic") do |topic|
+		topics.push(topic)
+	end
+	topics.sort!() do |a,b|
+		a.attributes['name'].upcase <=> b.attributes['name'].upcase
+	end
+	
+	clv = 0
+	topics.each() do |topic|
 		file.puts "\t" * 2 + formatTopicItem(
 			topic.attributes['name'].tosjis,
 			topic.attributes['location'],
@@ -114,17 +122,24 @@ def createProjectFile(filename, title, toc, target, toppage, assetsdir, assetsex
 	file.close()
 end
 
-basedir = ARGV[0]
+if ARGV.length < 3 then
+	print "usage:ruby parsetoc.rb <project-name> <base-dir> <document-title>\n"
+	exit(0)
+end
 
-createTocFile('dwref.hhc', [
+prjname = ARGV[0]
+basedir = ARGV[1]
+title   = ARGV[2]
+
+createTocFile(prjname+'.hhc', [
 		basedir + "/HTML",
 		basedir + "/CSS",
 		basedir + "/JavaScript"
 ])
 	
 createProjectFile(
-	'dwref.hhp', "Macromedia Dreamweaver リファレンスパネル",
-	'dwref.hhc', 'dwref.chm',
+	prjname+'.hhp', title,
+	prjname+'.hhc', prjname+'.chm',
 	'index.html',
 	basedir, /^(.*\.xml|.*(lookupMod|ASP|CF|JIS|JSP|PHP|SQL|Usable|XML|XSLT).*)$/
 )

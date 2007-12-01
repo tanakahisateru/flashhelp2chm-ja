@@ -25,7 +25,7 @@ def createProjectFile(prjname, basedir, title)
 	#Keywords
 	fd_idx = open(prjname+'.hhk', "w"); fd_idx.puts(HEADER+"\n<UL>")
 	keyword_index.keys.sort().each() do |name|
-		fd_idx.puts(buggy_formatIndexItem(name, keyword_index[name]))
+		fd_idx.puts(formatIndexItem(name, keyword_index[name]))
 	end
 	fd_idx.puts("</UL>\n"+FOOTER); fd_idx.close()
 	

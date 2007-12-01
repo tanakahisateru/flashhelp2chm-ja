@@ -13,5 +13,5 @@ rem echo XML書式の破損 /book/topic/subtopic(name="rules")
 rem pause
 rem echo 本当にできましたか
 rem pause
-ruby createhhp-ja.rb ./html
-"C:\Program Files\HTML Help Workshop\hhc.exe" dwref.hhp
+ruby createhhp-ja.rb dwref8 html "Macromedia Dreamweaver8 リファレンスパネル"
+"C:\Program Files\HTML Help Workshop\hhc.exe" dwref8.hhp

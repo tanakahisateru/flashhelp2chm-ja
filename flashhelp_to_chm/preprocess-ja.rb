@@ -6,11 +6,17 @@ $KCODE = "s"
 def convertFile(orgpath, targetpath)
 	
 	if orgpath =~ /.*\.html?/ then
-	
+		print targetpath + "\n";
+		
 		fin = open(orgpath, 'r')
 		fout = open(targetpath, 'w')
 		
-		text = fin.read().kconv(Kconv::SJIS, Kconv::UTF8)
+		text = fin.read()
+		#remove UTF-8 BOM if available
+		if text[0..2] == "\xef\xbb\xbf" then
+			text = text[3..-1]
+		end
+		text = text.kconv(Kconv::SJIS, Kconv::AUTO)
 		text.gsub!(
 			/\<meta\s+http-equiv=\"Content-Type\"\s+content=\"text\/html;\s+charset=UTF-8\"(\s*\/?)\>/i,
 			"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=shift_jis\"\\1>")
