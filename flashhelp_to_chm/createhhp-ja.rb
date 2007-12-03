@@ -57,14 +57,6 @@ def createProjectFile(prjname, basedir, title)
 	file.close()
 end
 
-def header()
-	return '<HTML><HEAD><meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1"><!-- Sitemap 1.0 --></HEAD><BODY><OBJECT type="text/site properties"></OBJECT>'
-end
-
-def footer()
-	return '</BODY></HTML>'
-end
-
 def formatTopicItem(name, href)
 	out = '<LI><OBJECT type="text/sitemap">'
 	out += sprintf('<param name="Name" value="%s">', name)
@@ -75,23 +67,64 @@ def formatTopicItem(name, href)
 	return out
 end
 
-def formatIndexItem(name, details)
+def __notinuse__formatIndexItem(name, details)
+	#This is like one provided HtmlHelpWorkshop IDE, but invalid !
 	out = '<LI><OBJECT type="text/sitemap">'
 	out += sprintf('<param name="Name" value="%s">', name)
 	details.each() do |det|
-		out += sprintf('<param name="Name" value="%s">', det['fullname'])
+		out += sprintf('<param name="Name" value="%s">', det['placement'])
 		out += sprintf('<param name="Local" value="%s">', det['href'])
 	end
 	out += "</OBJECT>"
 end
 
-def __notinuse__formatIndexItem(name, details)
+def formatIndexItem(name, details)
 	out = ""
-	details.each() do |det|
+	if details.length <= 1 then
 		out += '<LI><OBJECT type="text/sitemap">'
 		out += sprintf('<param name="Name" value="%s">', name)
-		out += sprintf('<param name="Local" value="%s">', det['href'])
+		out += sprintf('<param name="Local" value="%s">', details[0]['href'])
 		out += "</OBJECT>\n"
+	else
+		minelem = 100
+		details.each() do |det|
+			if minelem > det['placement'].size then
+				minelem = det['placement'].size
+			end
+		end
+		
+		path_depth_to_remove = 0
+		for col in 0...minelem
+			has_diff = false
+			prev_one = nil
+			details.each() do |det|
+				path = det['placement']
+				if prev_one == nil then
+					prev_one = path[col]
+				elsif path[col] != prev_one then
+					has_diff = true
+				end
+			end
+			if has_diff then
+				break
+			end
+			path_depth_to_remove += 1
+		end
+		
+		details.each() do |det|
+			out += '<LI><OBJECT type="text/sitemap">'
+			if path_depth_to_remove == minelem then
+				out += sprintf('<param name="Name" value="%s">', name)
+			else
+				out += sprintf('<param name="Name" value="%s (%s)">', name, det['placement'][path_depth_to_remove...-1].join(' '))
+			end
+			out += sprintf('<param name="Local" value="%s">', det['href'])
+			out += "</OBJECT>\n"
+		end
+		
+		#if path_depth_to_remove >= 1 then
+		#	print sprintf("about %s : merge:%s(depth %d/%d)\n", name, details[0]['placement'][0...path_depth_to_remove].join(' '), path_depth_to_remove, minelem)
+		#end
 	end
 	return out
 end
@@ -125,7 +158,11 @@ def parseBookToc(bookpath, fd_toc, keyword_index)
 	docpath = [title]
 	book.elements.each() do |topic|
 		name = CGI.escapeHTML(topic.attributes['name'].kconv(Kconv::SJIS, Kconv::UTF8))
-		href = bookpath + "/" + topic.attributes['href']
+		if topic.attributes['href'] != nil then
+			href = bookpath + "/" + topic.attributes['href']
+		else
+			href = nil
+		end
 		
 		#coordinate indent level and document path
 		level = Integer(topic.name[-1, 1])
@@ -151,11 +188,20 @@ def parseBookToc(bookpath, fd_toc, keyword_index)
 		#write toc entry
 		fd_toc.puts "\t"*(level+olv) + formatTopicItem(name, href)
 		
-		#log entry into keyword dict
+		#record entry into keyword dict only if it is unique href
 		if keyword_index[name] == nil then
 			keyword_index[name] = []
 		end
-		keyword_index[name].push({'fullname'=>docpath.join(' - '), 'href'=>href})
+		is_newpage = true
+		keyword_index[name].each() do |det|
+			if det['href'] == href then
+				is_newpage = false
+				break
+			end
+		end
+		if is_newpage then
+			keyword_index[name].push({'placement'=>docpath[0...-1], 'href'=>href})
+		end
 	end
 	while 0 < clv do
 		clv -= 1
