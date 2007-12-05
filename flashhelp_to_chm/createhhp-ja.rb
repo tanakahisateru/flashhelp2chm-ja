@@ -116,7 +116,7 @@ def formatIndexItem(name, details)
 			if path_depth_to_remove == minelem then
 				out += sprintf('<param name="Name" value="%s">', name)
 			else
-				out += sprintf('<param name="Name" value="%s (%s)">', name, det['placement'][path_depth_to_remove...-1].join(' '))
+				out += sprintf('<param name="Name" value="%s (%s)">', name, det['placement'][path_depth_to_remove..-1].join(' '))
 			end
 			out += sprintf('<param name="Local" value="%s">', det['href'])
 			out += "</OBJECT>\n"
@@ -150,7 +150,7 @@ end
 def parseBookToc(bookpath, fd_toc, keyword_index)
 	olv = 1
 	book = Document.new(File.new(bookpath + "/help_toc.xml")).root
-	title = book.attributes['title'].kconv(Kconv::SJIS, Kconv::UTF8)
+	title = CGI.escapeHTML(book.attributes['title'].kconv(Kconv::SJIS, Kconv::UTF8))
 	
 	fd_toc.puts "\t"*olv + formatTopicItem(title, bookpath+"/"+firstpageOfBook(book))
 	

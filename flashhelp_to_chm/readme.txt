@@ -16,13 +16,21 @@
   FlashのHelpPanelフォルダのパスはデフォルトで以下の場所にある。
   Flash8:
   C:\Documents and Settings\All Users\Application Data\Macromedia\Flash 8\ja\Configuration\HelpPanel
+  Flash CS3:
+  C:\Documents and Settings\All Users\Application Data\Adobe\Flash CS3\ja\Configuration\HelpPanel
 
-2.ドキュメントツリーを解析し、HTMLヘルププロジェクトに変換
+2.オプション：不要なドキュメントセットを除外する
+  もし不要なドキュメントセットがある場合、変換コピーしたhtmlフォルダ内の不要フォルダを削除してもかまわない。
+  FlashLiteのドキュメントは不要、AS3関連のみ、など、用途に応じて構成物を除外することができる。
+
+3.ドキュメントツリーを解析し、HTMLヘルププロジェクトに変換
 
   Flash8:
   ruby createhhp-ja.rb  flashhelp8 html "Macromedia Flash8 ヘルプ"
+  Flash CS3:
+  ruby createhhp-ja.rb  flashhelp_cs3 html "Adobe Flash CS3 ヘルプ"
 
-3.HTMLヘルププロジェクトをコンパイル
+4.HTMLヘルププロジェクトをコンパイル
   "C:\Program Files\HTML Help Workshop\hhc.exe" flashhelp8.hhp
 
 ライセンス
