@@ -16,6 +16,8 @@ def convertFile(orgpath, targetpath)
 			utext.gsub!(/titleBar_setSubTitle\(\"Interface.*?([\w\d]+?)\"\)\;/){|hit|
 				'titleBar_setSubTitle("Interface ' + $1 + '");'
 			}
+            utext.gsub!("\342\204\242", '&trade;')
+            utext.gsub!("\302\256", '&reg;')
 			text = utext.tosjis
 			$KCODE='SJIS'
 			#replace meta tag
@@ -29,6 +31,12 @@ def convertFile(orgpath, targetpath)
 			text.gsub!(/name\=\"(event|style|effect):([^\"]+)/){|hit|
 				"name=\"" + $2 + "(" + $1 + ")"
 			}
+            #remove frameset operation
+            text.gsub!(/&nbsp;\|&nbsp;<a[^>]*id=\"framesLink1\">.*?<\/a><a[^>]*id=\"noFramesLink1\">.*?<\/a>/,
+                '<a href="" id="framesLink1"></a><a href="" id="noFramesLink1"></a>')
+            text.gsub!(/<th class=\"summaryTableOwnerCol\">定義<\/th>/,
+                '<th class="summaryTableOwnerCol"><span style="white-space:nowrap;">定義</span></th>')
+            
 			#####################################################
 			# replace bad japanese translation
 			text.gsub!(/\<div class\=\"summaryTableTitle\"\>Protectedプロパティ\<\/div\>/){|hit|
