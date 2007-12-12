@@ -1,5 +1,7 @@
 require "CGI"
 
+$KCODE="sjis"
+
 def createProjectFile(prjname, basedir, title)
     
     packagelist = scanPackageTree(basedir)
