@@ -1,3 +1,3 @@
 ruby preprocess-ja.rb ./langref html
-ruby createhhp-ja.rb flex2langref html "Adobe Flex 2 ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹ã‚¬ã‚¤ãƒ‰"
+ruby createhhp-ja.rb flex2langref html "Adobe Flex 2 ƒŠƒtƒ@ƒŒƒ“ƒXƒKƒCƒh"
 "C:\Program Files\HTML Help Workshop\hhc.exe" flex2langref.hhp
