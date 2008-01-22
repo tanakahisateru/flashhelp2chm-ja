@@ -58,4 +58,4 @@ copy /Y josh.css .\html\JavaScript
   GPLˆµ‚¢
 
 ìÒ
-  “c’†‹v‹P htanaka@loop-net.co.jp
+  “c’†‹v‹P tanakahisateru@gmail.com
