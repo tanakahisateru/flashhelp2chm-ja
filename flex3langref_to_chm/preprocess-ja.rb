@@ -34,11 +34,12 @@ def convertFile(orgpath, targetpath)
             #remove frameset operation
             text.gsub!(/&nbsp;\|&nbsp;<a[^>]*id=\"framesLink1\">.*?<\/a><a[^>]*id=\"noFramesLink1\">.*?<\/a>/,
                 '<a href="" id="framesLink1"></a><a href="" id="noFramesLink1"></a>')
-            text.gsub!(/<th class=\"summaryTableOwnerCol\">定義<\/th>/,
-                '<th class="summaryTableOwnerCol"><span style="white-space:nowrap;">定義</span></th>')
+            text.gsub!(/<th class=\"summaryTableOwnerCol\">(.*?)<\/th>/,
+                '<th class="summaryTableOwnerCol"><span style="white-space:nowrap;">' + $0 + '</span></th>')
             
 			#####################################################
 			# replace bad japanese translation
+=begin
 			text.gsub!(/\<div class\=\"summaryTableTitle\"\>Protectedプロパティ\<\/div\>/){|hit|
 				'<div class="summaryTableTitle">プロテクティッドプロパティ</div>'
 			}
@@ -72,6 +73,7 @@ def convertFile(orgpath, targetpath)
 			text.gsub!(/class\=\"summaryTable hideInheritedProtectedメソッド\"/){|hit|
 				'class="summaryTable hideInheritedProtectedMethod"'
 			}
+=end
 			#####################################################
 		end
 		open(targetpath, 'w') do |fout|

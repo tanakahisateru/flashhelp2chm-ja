@@ -193,13 +193,13 @@ def scanClassDocument(file)
     scanstarts = false
     anchors = []
     IO.foreach(file) do |line|
-        if (line =~ /\<a name\=\"([^\"]+)\"\>/i) != nil then
-            aname = $1
+		line.scan(/\<a name\=\"([^\"]+)\"\>/i) { |hit|
+            aname = hit[0]
             if (aname !~ /^[a-z]\w*(Detail|Summary)$/) then
                 #print "#{aname}\n"
                 anchors.push(aname)
             end
-        end
+        }
     end
     return anchors
 end
