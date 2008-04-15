@@ -2,14 +2,21 @@ require 'net/http'
 require 'set'
 require 'fileutils'
 
+if ARGV.length < 4 then
+	print "usage:ruby download.rb <host> <remote-base-dir> <start-file> <local-base-dir>\n"
+	print " e.g. ruby download.rb livedocs.adobe.com /flex/3_jp/langref index.html langref\n"
+	exit(0)
+end
+
 host = ARGV[0]
 remote_base = ARGV[1]
-local_base = ARGV[2]
+startfile = ARGV[2]
+local_base = ARGV[3]
 
-host = 'livedocs.adobe.com'
-remote_base = '/flex/3_jp/langref'
-startfile = 'index.html'
-local_base = 'langref'
+#host = 'livedocs.adobe.com'
+#remote_base = '/flex/3_jp/langref'
+#startfile = 'index.html'
+#local_base = 'langref'
 
 FCAT_CONTAINER = ['index.html', 'package-frame.html']
 FCAT_LIST = ['package-list.html', 'class-list.html', 'all-classes.html', 'index-list.html', 'mxml-tags.html']

@@ -37,6 +37,12 @@ def convertFile(orgpath, targetpath)
             text.gsub!(/<th class=\"summaryTableOwnerCol\">(.*?)<\/th>/,
                 '<th class="summaryTableOwnerCol"><span style="white-space:nowrap;">' + $0 + '</span></th>')
             
+            #remove search feature
+            text.gsub!(/<form\s+.*?action=.*?search.*?>.+<\/form>/im, '')
+            
+            #remove livedocs footer
+            text.gsub!(/<!--\s*?begin\s+?:\s+?add techNotes\s*?-->.+?<!--\s*?End SiteCatalyst.*-->/m, '')
+            
 			#####################################################
 			# replace bad japanese translation
 =begin
