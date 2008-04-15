@@ -24,19 +24,19 @@ FCAT_TITLEBAR = ['title-bar.html']
 def valid_page?(html, url)
     filename = url.split('/')[-1]
     if FCAT_CONTAINER.include?(filename) then
-        if html =~ /<frameset/i and html =~ /Flex/i then
+        if (html =~ /<frameset/i) != nil and (html =~ /Flex/i) != nil then
             return true
         end
     elsif FCAT_LIST.include?(filename) then
-        if html =~ /<body\s+class=\"classFrameContent\">/i then
+        if (html =~ /<body\s+class=\"classFrameContent\">/i) != nil then
             return true
         end
     elsif FCAT_TITLEBAR.include?(filename) then
-        if html =~ /Flex/i then
+        if (html =~ /Flex/i) != nil then
             return true
         end
     else
-        if html =~ /Flex/i and html =~ /<div\s+class=\"MainContent\">/i then
+        if (html =~ /Flex/i) != nil and (html =~ /<div\s+class=\"MainContent\">/i) != nil then
             return true
         end
     end
@@ -67,11 +67,11 @@ def scan_content(html, url, re, place, task, cmpl)
 		rel = hit[place]
 		rel.gsub!(/(\w+)\.\//, $1+"/")  #avoid document bug : "rpc./class-"
 		found = pathjoin(dir, rel)
-		if found =~ /^\.\.\// then
+		if (found =~ /^\.\.\//) != nil then
 			print "  (external link skipped : %s)\n" % found
 		else
 			if not(task.include?(found) || cmpl.include?(found) || url==found) then
-				if not rel =~ /^\// then
+				if rel !~ /^\// then
 					print "  link : %s\n" % found
 					yield found
 				end
@@ -81,7 +81,7 @@ def scan_content(html, url, re, place, task, cmpl)
 end
 
 def findlink(html, url, task, cmpl)
-	if url =~ /\.html?$/ then
+	if (url =~ /\.html?$/) != nil then
 		re = /(src|href)=\"([^\"\'\?\#\:]+)\"/
 		scan_content(html, url, re, 1, task, cmpl) {|found|
 			task.push(found)
@@ -94,7 +94,7 @@ def findlink(html, url, task, cmpl)
 		scan_content(html, url, re, 0, task, cmpl) {|found|
 			task.push(found + ".swf")
 		}
-	elsif url =~ /\.css$/ then
+	elsif (url =~ /\.css$/) != nil then
 		re = /url\((.+?)\)/
 		scan_content(html, url, re, 0, task, cmpl) {|found|
 			task.push(found)
@@ -141,7 +141,7 @@ while not task.empty?
 	}
     if resp.code == "200" then
         #livedocs.adobe.com has a critical bug, it respond incorrect content sometimes...
-        if url =~ /\.html?$/ and not valid_page?(resp.body, url) then
+        if (url =~ /\.html?$/) != nil and not valid_page?(resp.body, url) then
             print "INVALID(%d/%d)\n" % [retry_count+1, MAX_RETRY]
             retry_count+=1
             if retry_count < MAX_RETRY then

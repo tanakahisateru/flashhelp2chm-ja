@@ -5,7 +5,7 @@ $KCODE='SJIS'
 
 def convertFile(orgpath, targetpath)
 	print orgpath + "\n"
-	if orgpath =~ /.*\.html?/ then
+	if (orgpath =~ /.*\.html?/) != nil then
 		text = ""
 		open(orgpath, 'r') do |fin|
 			$KCODE='UTF8'

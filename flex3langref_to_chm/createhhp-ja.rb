@@ -39,7 +39,7 @@ def collectAssets(assetsdir, assetsexplise)
     Dir.foreach(assetsdir) do |asset|
         assetpath = assetsdir + '/' + asset
         if File.ftype(assetpath) == 'file' then
-            assets.push(assetpath) unless assetsexplise =~ assetpath
+            assets.push(assetpath) unless (assetsexplise =~ assetpath) != nil
         elsif File.ftype(assetpath) == 'directory' and asset[0,1] != '.' then
             assets.concat(collectAssets(assetpath, assetsexplise))
         end
@@ -195,7 +195,13 @@ def scanClassDocument(file)
     IO.foreach(file) do |line|
 		line.scan(/\<a name\=\"([^\"]+)\"\>/i) { |hit|
             aname = hit[0]
-            if (aname !~ /^[a-z]\w*(Detail|Summary)$/) then
+			if (aname =~ /^([\w\d_]+)\(.*\)$/) != nil then
+				newent = $1
+				if anchors.include?(newent+"()") then
+					anchors.delete(newent+"()")
+				end
+			end
+            if aname !~ /^[a-z_]\w*(Detail|Summary)$/ then
                 #print "#{aname}\n"
                 anchors.push(aname)
             end
