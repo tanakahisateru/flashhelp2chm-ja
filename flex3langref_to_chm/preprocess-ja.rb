@@ -31,6 +31,10 @@ def convertFile(orgpath, targetpath)
 			text.gsub!(/name\=\"(event|style|effect):([^\"]+)/){|hit|
 				"name=\"" + $2 + "(" + $1 + ")"
 			}
+			
+            #remove XML header
+            text.gsub!(/<\?xml.*?\?>/, '')
+			
             #remove frameset operation
             text.gsub!(/&nbsp;\|&nbsp;<a[^>]*id=\"framesLink1\">.*?<\/a><a[^>]*id=\"noFramesLink1\">.*?<\/a>/,
                 '<a href="" id="framesLink1"></a><a href="" id="noFramesLink1"></a>')
