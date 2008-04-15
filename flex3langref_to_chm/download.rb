@@ -20,6 +20,7 @@ local_base = ARGV[3]
 
 FCAT_CONTAINER = ['index.html', 'package-frame.html']
 FCAT_LIST = ['package-list.html', 'class-list.html', 'all-classes.html', 'index-list.html', 'mxml-tags.html']
+FCAT_TITLEBAR = ['title-bar.html']
 def valid_page?(html, url)
     filename = url.split('/')[-1]
     if FCAT_CONTAINER.include?(filename) then
@@ -28,6 +29,10 @@ def valid_page?(html, url)
         end
     elsif FCAT_LIST.include?(filename) then
         if html =~ /<body\s+class=\"classFrameContent\">/i then
+            return true
+        end
+    elsif FCAT_TITLEBAR.include?(filename) then
+        if html =~ /Flex/i then
             return true
         end
     else
@@ -42,6 +47,9 @@ def pathjoin(dir, rel)
 	rel_a = rel.split('/')
 	while rel_a[0] == '..' || rel_a[0] == '.' do
 		if rel_a[0] == '..' then
+			if dir_a.size < 1 then
+				return rel_a.join('/')
+			end
 			dir_a.pop()
 		end
 		rel_a.shift()
@@ -59,10 +67,14 @@ def scan_content(html, url, re, place, task, cmpl)
 		rel = hit[place]
 		rel.gsub!(/(\w+)\.\//, $1+"/")  #avoid document bug : "rpc./class-"
 		found = pathjoin(dir, rel)
-		if not(task.include?(found) || cmpl.include?(found)) then
-			if not rel =~ /^\// then
-				print "  link to : %s\n" % found
-				yield found
+		if found =~ /^\.\.\// then
+			print "  (external link skipped : %s)\n" % found
+		else
+			if not(task.include?(found) || cmpl.include?(found) || url==found) then
+				if not rel =~ /^\// then
+					print "  link : %s\n" % found
+					yield found
+				end
 			end
 		end
 	}

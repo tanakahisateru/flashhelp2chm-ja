@@ -10,9 +10,30 @@
   HTML Help Workshop
 
 手順
+0.不具合ファイルの代替を事前に準備しておく
+  Flex2のオンラインドキュメント
+  http://livedocs.adobe.com/flex/2_jp/langref/migration.html
+  を、ローカルの
+  langref/migration.html
+  に事前に保存しておく。
+
+  mkdir langref
+  wget -P langref http://livedocs.adobe.com/flex/2_jp/langref/migration.html
+
+  === 注：重要 ===
+  2008/4/15現在、オンラインドキュメントの
+  http://livedocs.adobe.com/flex/3_jp/langref/migration.html
+  は壊れている。この壊れたHTMLは、
+  
+  * 存在しないページへのリンクが大量にあり、クローラを邪魔する。
+  * あまりにも誤った記述のために、HtmlHelpコンパイラをクラッシュさせてしまう。
+  
+  という問題を起こす。
+
 1.Livedocsサーバを走査してコンテンツを網羅的に取得する
   ruby download.rb livedocs.adobe.com /flex/3_jp/langref index.html langref
 
+  この処理はHTMLページからリンクらしきものをパターン検索してクロールする。
   この処理をCtrl+Cで中断しても、次回再開したとき、ローカルに取得済み、
   および、デッドリンクとわかっているURLはスキップする。
 
