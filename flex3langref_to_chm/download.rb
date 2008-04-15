@@ -11,12 +11,23 @@ remote_base = '/flex/3_jp/langref'
 startfile = 'index.html'
 local_base = 'langref'
 
-def valid_page?(html)
-	if html =~ /\WFlex\W/ then
-		return true
-	else
-		return false
-	end
+FCAT_CONTAINER = ['index.html', 'package-frame.html']
+FCAT_LIST = ['package-list.html', 'class-list.html', 'all-classes.html', 'index-list.html', 'mxml-tags.html']
+def valid_page?(html, url)
+    filename = url.split('/')[-1]
+    if FCAT_CONTAINER.include?(filename) then
+        if html =~ /<frameset/i and html =~ /Flex/i then
+            return true
+        end
+    elsif FCAT_LIST.include?(filename) then
+        if html =~ /<body\s+class=\"classFrameContent\">/i then
+            return true
+        end
+    else
+        if html =~ /Flex/i and html =~ /<div\s+class=\"MainContent\">/i then
+            return true
+        end
+    end
 end
 
 def pathjoin(dir, rel)
@@ -43,7 +54,7 @@ def scan_content(html, url, re, place, task, cmpl)
 		found = pathjoin(dir, rel)
 		if not(task.include?(found) || cmpl.include?(found)) then
 			if not rel =~ /^\// then
-				print "found : %s\n" % found
+				print "  link to : %s\n" % found
 				yield found
 			end
 		end
@@ -83,7 +94,8 @@ if File.exist?('error_urls.log') then
 		error_urls.push(line)
 	}
 end
-
+MAX_RETRY = 1
+retry_count = 0
 while not task.empty?
 	url = task.shift()
 	
@@ -91,8 +103,11 @@ while not task.empty?
 		next
 	end
 	
+    print url + " : "
+    STDOUT.flush()
+    
 	if File.exist?(local_base + '/' + url) then
-		print "SKIP : %s (%d/%d)\n" % [url, 1 + cmpl.size, 1 + task.size + cmpl.size]
+		print "SKIP (%d/%d)\n" % [1 + cmpl.size, 1 + task.size + cmpl.size]
 		open(local_base + '/' + url, 'rb') { |fd|
 			body = fd.read()
 			findlink(body, url, task, cmpl)
@@ -101,28 +116,41 @@ while not task.empty?
 		next
 	end
 	
+    resp = nil
 	Net::HTTP.start(host) { |http|
 		resp = http.get(remote_base + '/' + url)
-		if resp.code == "200" then
-			if url =~ /\.html?$/ and not valid_page?(resp.body) then
-				print "INVALID PAGE (livedocs bug) : %s\n" % url
-				task.unshift(url)
-				next
-			end
-			print "OK : %s (%d/%d)\n" % [url, 1 + cmpl.size, 1 + task.size + cmpl.size]
-			dir = local_base + '/' + url.split('/')[0...-1].join('/')
-			FileUtils.mkdir_p(dir) if not File.exist?(dir)
-			open(local_base + '/' + url, 'wb') { |fd|
-				fd.write(resp.body)
-			}
-			findlink(resp.body, url, task, cmpl)
-		else
-			print "ERROR : %s (%d/%d)\n" % [url, 1 + cmpl.size, 1 + task.size + cmpl.size]
-			error_urls.push(url)
-			open('error_urls.log', 'a') { |fd|
-				fd.puts(url)
-			}
-		end
 	}
+    if resp.code == "200" then
+        #livedocs.adobe.com has a critical bug, it respond incorrect content sometimes...
+        if url =~ /\.html?$/ and not valid_page?(resp.body, url) then
+            print "INVALID(%d/%d)\n" % [retry_count+1, MAX_RETRY]
+            retry_count+=1
+            if retry_count < MAX_RETRY then
+                task.unshift(url)
+                sleep(3)  #retry after 3sec
+                next
+            else
+                print "-- moved to the end of queue.\n"
+                task.push(url)
+                retry_count = 0
+                next
+            end
+        end
+        retry_count = 0;
+        print "OK(%d/%d)\n" % [1 + cmpl.size, 1 + task.size + cmpl.size]
+        dir = local_base + '/' + url.split('/')[0...-1].join('/')
+        FileUtils.mkdir_p(dir) if not File.exist?(dir)
+        open(local_base + '/' + url, 'wb') { |fd|
+            fd.write(resp.body)
+        }
+        findlink(resp.body, url, task, cmpl)
+    else
+        print "ERROR %d (%d/%d)\n" % [resp.code, 1 + cmpl.size, 1 + task.size + cmpl.size]
+        error_urls.push(url)
+        open('error_urls.log', 'a') { |fd|
+            fd.puts(url)
+        }
+    end
+    sleep(0.2)  #retry after 3sec
 	cmpl.push(url)
 end
