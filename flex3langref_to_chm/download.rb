@@ -108,8 +108,8 @@ task = [startfile]
 cmpl = []
 
 error_urls = []
-if File.exist?('error_urls.log') then
-    IO.foreach('error_urls.log', 'r') { |line|
+if File.exist?('error_links.log') then
+    IO.foreach('error_links.log', 'r') { |line|
         error_urls.push(line)
     }
 end
@@ -162,14 +162,17 @@ while not task.empty?
         open(local_base + '/' + url, 'wb') { |fd|
             fd.write(resp.body)
         }
+        open('success.log', 'a') { |fd|
+            fd.puts(url)
+        }
         findlink(resp.body, url, task, cmpl)
     else
         print "ERROR %d (%d/%d)\n" % [resp.code, 1 + cmpl.size, 1 + task.size + cmpl.size]
         error_urls.push(url)
-        open('error_urls.log', 'a') { |fd|
+        open('error_links.log', 'a') { |fd|
             fd.puts(url)
         }
     end
-    sleep(0.2)  #retry after 3sec
+    sleep(0.2)
     cmpl.push(url)
 end
