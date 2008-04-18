@@ -193,14 +193,14 @@ def scanClassDocument(file)
     scanstarts = false
     anchors = []
     IO.foreach(file) do |line|
-		line.scan(/\<a name\=\"([^\"]+)\"\>/i) { |hit|
+        line.scan(/\<a name\=\"([^\"]+)\"\>/i) { |hit|
             aname = hit[0]
-			if (aname =~ /^([\w\d_]+)\(.*\)$/) != nil then
-				newent = $1
-				if anchors.include?(newent+"()") then
-					anchors.delete(newent+"()")
-				end
-			end
+            if (aname =~ /^([\w\d_]+)\(.*\)$/) != nil then
+                newent = $1
+                if anchors.include?(newent+"()") then
+                    anchors.delete(newent+"()")
+                end
+            end
             if aname !~ /^[a-z_]\w*(Detail|Summary)$/ then
                 #print "#{aname}\n"
                 anchors.push(aname)
@@ -240,8 +240,8 @@ def formatIndexItem(name, details)
 end
 
 if ARGV.length < 3 then
-	print "usage:ruby parsetoc.rb <project-name> <base-dir> <document-title>\n"
-	exit(0)
+    print "usage:ruby parsetoc.rb <project-name> <base-dir> <document-title>\n"
+    exit(0)
 end
 
 prjname = ARGV[0]

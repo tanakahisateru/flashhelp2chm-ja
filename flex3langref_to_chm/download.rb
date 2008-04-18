@@ -3,9 +3,9 @@ require 'set'
 require 'fileutils'
 
 if ARGV.length < 4 then
-	print "usage:ruby download.rb <host> <remote-base-dir> <start-file> <local-base-dir>\n"
-	print " e.g. ruby download.rb livedocs.adobe.com /flex/3_jp/langref index.html langref\n"
-	exit(0)
+    print "usage:ruby download.rb <host> <remote-base-dir> <start-file> <local-base-dir>\n"
+    print " e.g. ruby download.rb livedocs.adobe.com /flex/3_jp/langref index.html langref\n"
+    exit(0)
 end
 
 host = ARGV[0]
@@ -43,65 +43,65 @@ def valid_page?(html, url)
 end
 
 def pathjoin(dir, rel)
-	dir_a = dir.split('/')
-	rel_a = rel.split('/')
-	while rel_a[0] == '..' || rel_a[0] == '.' do
-		if rel_a[0] == '..' then
-			if dir_a.size < 1 then
-				return rel_a.join('/')
-			end
-			dir_a.pop()
-		end
-		rel_a.shift()
-	end
-	return (dir_a + rel_a).join('/')
+    dir_a = dir.split('/')
+    rel_a = rel.split('/')
+    while rel_a[0] == '..' || rel_a[0] == '.' do
+        if rel_a[0] == '..' then
+            if dir_a.size < 1 then
+                return rel_a.join('/')
+            end
+            dir_a.pop()
+        end
+        rel_a.shift()
+    end
+    return (dir_a + rel_a).join('/')
 end
 
 def dir_of(path)
-	return path.split('/')[0...-1].join('/')
+    return path.split('/')[0...-1].join('/')
 end
 
 def scan_content(html, url, re, place, task, cmpl)
-	html.scan(re) { |hit|
-		dir = dir_of(url)
-		rel = hit[place]
-		rel.gsub!(/(\w+)\.\//, $1+"/")  #avoid document bug : "rpc./class-"
-		found = pathjoin(dir, rel)
-		if (found =~ /^\.\.\//) != nil then
-			print "  (external link skipped : %s)\n" % found
-		else
-			if not(task.include?(found) || cmpl.include?(found) || url==found) then
-				if rel !~ /^\// then
-					print "  link : %s\n" % found
-					yield found
-				end
-			end
-		end
-	}
+    html.scan(re) { |hit|
+        dir = dir_of(url)
+        rel = hit[place]
+        rel.gsub!(/(\w+)\.\//, $1+"/")  #avoid document bug : "rpc./class-"
+        found = pathjoin(dir, rel)
+        if (found =~ /^\.\.\//) != nil then
+            print "  (external link skipped : %s)\n" % found
+        else
+            if not(task.include?(found) || cmpl.include?(found) || url==found) then
+                if rel !~ /^\// then
+                    print "  link : %s\n" % found
+                    yield found
+                end
+            end
+        end
+    }
 end
 
 def findlink(html, url, task, cmpl)
-	if (url =~ /\.html?$/) != nil then
-		re = /(src|href)=\"([^\"\'\?\#\:]+)\"/
-		scan_content(html, url, re, 1, task, cmpl) {|found|
-			task.push(found)
-		}
-		re = /loadClassListFrame\([\'\"]([^\"\'\?\#\:]+)[\'\"]\)/
-		scan_content(html, url, re, 0, task, cmpl) {|found|
-			task.push(found)
-		}
-		re = /\"src\", \"(examples\/.+?)\"/
-		scan_content(html, url, re, 0, task, cmpl) {|found|
-			task.push(found + ".swf")
-		}
-	elsif (url =~ /\.css$/) != nil then
-		re = /url\((.+?)\)/
-		scan_content(html, url, re, 0, task, cmpl) {|found|
-			task.push(found)
-		}
-	else
-		return
-	end
+    if (url =~ /\.html?$/) != nil then
+        re = /(src|href)=\"([^\"\'\?\#\:]+)\"/
+        scan_content(html, url, re, 1, task, cmpl) {|found|
+            task.push(found)
+        }
+        re = /loadClassListFrame\([\'\"]([^\"\'\?\#\:]+)[\'\"]\)/
+        scan_content(html, url, re, 0, task, cmpl) {|found|
+            task.push(found)
+        }
+        re = /\"src\", \"(examples\/.+?)\"/
+        scan_content(html, url, re, 0, task, cmpl) {|found|
+            task.push(found + ".swf")
+        }
+    elsif (url =~ /\.css$/) != nil then
+        re = /url\((.+?)\)/
+        scan_content(html, url, re, 0, task, cmpl) {|found|
+            task.push(found)
+        }
+    else
+        return
+    end
 end
 
 task = [startfile]
@@ -109,36 +109,36 @@ cmpl = []
 
 error_urls = []
 if File.exist?('error_urls.log') then
-	IO.foreach('error_urls.log', 'r') { |line|
-		error_urls.push(line)
-	}
+    IO.foreach('error_urls.log', 'r') { |line|
+        error_urls.push(line)
+    }
 end
 MAX_RETRY = 1
 retry_count = 0
 while not task.empty?
-	url = task.shift()
-	
-	if error_urls.include?(url) then
-		next
-	end
-	
+    url = task.shift()
+    
+    if error_urls.include?(url) then
+        next
+    end
+    
     print url + " : "
     STDOUT.flush()
     
-	if File.exist?(local_base + '/' + url) then
-		print "SKIP (%d/%d)\n" % [1 + cmpl.size, 1 + task.size + cmpl.size]
-		open(local_base + '/' + url, 'rb') { |fd|
-			body = fd.read()
-			findlink(body, url, task, cmpl)
-		}
-		cmpl.push(url)
-		next
-	end
-	
+    if File.exist?(local_base + '/' + url) then
+        print "SKIP (%d/%d)\n" % [1 + cmpl.size, 1 + task.size + cmpl.size]
+        open(local_base + '/' + url, 'rb') { |fd|
+            body = fd.read()
+            findlink(body, url, task, cmpl)
+        }
+        cmpl.push(url)
+        next
+    end
+    
     resp = nil
-	Net::HTTP.start(host) { |http|
-		resp = http.get(remote_base + '/' + url)
-	}
+    Net::HTTP.start(host) { |http|
+        resp = http.get(remote_base + '/' + url)
+    }
     if resp.code == "200" then
         #livedocs.adobe.com has a critical bug, it respond incorrect content sometimes...
         if (url =~ /\.html?$/) != nil and not valid_page?(resp.body, url) then
@@ -171,5 +171,5 @@ while not task.empty?
         }
     end
     sleep(0.2)  #retry after 3sec
-	cmpl.push(url)
+    cmpl.push(url)
 end
