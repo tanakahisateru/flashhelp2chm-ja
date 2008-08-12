@@ -132,25 +132,28 @@ def logfmt(str)
 end
 
 def scanPackageTree(basedir)
-    rxgrp = /<a style=\"color:black\".* href=\"([\w\d\-\/\#\.]+?)\">([^<>]+)<\/a>/
-    rxpkg = /<a.* onclick=\"(.*?)\".* href=\"([\w\d\-\/\#\.]+?)\">([^<>]+)<\/a>/
+    rxgrp = /<a.* href=\"([\w\d\-\/\#\.]+?)\".* style=\"color:\s*?black\">([^<>]+)<\/a>/
+    rxpkg = /<a.* href=\"([\w\d\-\/\#\.]+?)\" onclick=\"(.*?)\".*>([^<>]+)<\/a>/
     rxapx = /<a.* href=\"([\w\d\-\/\#\.]+?)\">([^<>]+)<\/a>/
     
-    rxclick = /loadClassListFrame\(\'([^\'\"]+)\'\)/
+    rxclick = /javascript:loadClassListFrame\(\'([^\'\"]+)\'\)/
     
     rxetc = /<a href=\"(package\.html\#[\w\d\-\(\)\.]+?)\">([^<>]+)<\/a>/
     rxcls = /<a href=\"([\w\d\-\(\)\.\/]+?)\".*\>(<i>)?([^<>]+)(<\/i>)?<\/a>/
     
     packagelist = []
-    IO.foreach(basedir + '/' + PACKAGE_LIST_FILENAME) do | line |
+    lines = File.open(basedir + '/' + PACKAGE_LIST_FILENAME).read().split(/(<a\s.*?>.*?<\/a>)/)
+    
+    lines.each() do | line |
+        #print line+"\n****"
         if (line =~ rxgrp) != nil then
             gpfile = $1
             gpname = $2
             print "<<group : #{logfmt(gpname)}>>\n"
             packagelist.push({'name'=>gpname, 'file'=>gpfile, 'packages'=>[]});
         elsif (line =~ rxpkg) != nil then
-            oncl = $1
-            pkgdet  = $2
+            oncl = $2
+            pkgdet  = $1
             pkgname = $3
             if (oncl =~ rxclick) != nil then
                 print "  #{logfmt(pkgname)}\n"
@@ -160,7 +163,8 @@ def scanPackageTree(basedir)
                 if (pkgcl =~ /^(([\w\d\-\.]+\/)+)[\w\d\-\.\#]*$/) != nil then
                     pkgdir = $1
                 end
-                IO.foreach(basedir + '/' + pkgcl) do | line |
+                lines2 = File.open(basedir + '/' + pkgcl).read().split(/(<a\s.*?>.*?<\/a>)/)
+                lines2.each() do | line |
                     if (line =~ rxetc) != nil then
                         classfile = $1
                         classname = $2

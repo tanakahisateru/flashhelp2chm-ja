@@ -118,7 +118,7 @@ retry_count = 0
 while not task.empty?
     url = task.shift()
     
-    if error_urls.include?(url) then
+    if error_urls.include?(url) or (url =~ /^\s*$/)==0 then
         next
     end
     
