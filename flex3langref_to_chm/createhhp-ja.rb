@@ -132,14 +132,15 @@ def logfmt(str)
 end
 
 def scanPackageTree(basedir)
-    rxgrp = /<a.* href=\"([\w\d\-\/\#\.]+?)\".* style=\"color:\s*?black\">([^<>]+)<\/a>/
-    rxpkg = /<a.* href=\"([\w\d\-\/\#\.]+?)\" onclick=\"(.*?)\".*>([^<>]+)<\/a>/
-    rxapx = /<a.* href=\"([\w\d\-\/\#\.]+?)\">([^<>]+)<\/a>/
+    rxgrp = /<a.* href="([\w\d\-\/\#\.]+?)".* style="color:\s*?black">([^<>]+)<\/a>/
+    rxpkg = /<a.* href="([\w\d\-\/\#\.]+?)" onclick="(.*?)".*>([^<>]+)<\/a>/
+    rxapx = /<a.* href="([\w\d\-\/\#\.]+?)">([^<>]+)<\/a>/
     
-    rxclick = /javascript:loadClassListFrame\(\'([^\'\"]+)\'\)/
+    rxclick = /javascript:loadClassListFrame\(\'([^'"]+)\'\)/
     
-    rxetc = /<a href=\"(package\.html\#[\w\d\-\(\)\.]+?)\">([^<>]+)<\/a>/
-    rxcls = /<a href=\"([\w\d\-\(\)\.\/]+?)\".*\>(<i>)?([^<>]+)(<\/i>)?<\/a>/
+    rxdet = /<a.* href="package-detail\.html".*\>.+?<\/a>/
+    rxetc = /<a.* href="(package\.html\#[\w\d\-\(\)\.]+?)">(.+?)<\/a>/
+    rxcls = /<a.* href="([\w\d\-\(\)\.\/]+?)".*\>(<i>)?(.+?)(<\/i>)?<\/a>/
     
     packagelist = []
     lines = File.open(basedir + '/' + PACKAGE_LIST_FILENAME).read().split(/(<a\s.*?>.*?<\/a>)/)
@@ -165,7 +166,9 @@ def scanPackageTree(basedir)
                 end
                 lines2 = File.open(basedir + '/' + pkgcl).read().split(/(<a\s.*?>.*?<\/a>)/)
                 lines2.each() do | line |
-                    if (line =~ rxetc) != nil then
+                    if (line =~ rxdet) != nil then
+                        #do nothing
+                    elsif (line =~ rxetc) != nil then
                         classfile = $1
                         classname = $2
                         print "    #{logfmt(pkgname)}.#{logfmt(classname)}\n"
@@ -197,7 +200,7 @@ def scanClassDocument(file)
     scanstarts = false
     anchors = []
     IO.foreach(file) do |line|
-        line.scan(/\<a name\=\"([^\"]+)\"\>/i) { |hit|
+        line.scan(/\<a name\="([^"]+)"\>/i) { |hit|
             aname = hit[0]
             if (aname =~ /^([\w\d_]+)\(.*\)$/) != nil then
                 newent = $1
