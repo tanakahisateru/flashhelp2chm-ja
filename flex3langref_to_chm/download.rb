@@ -36,7 +36,7 @@ def valid_page?(html, url)
             return true
         end
     else
-        if (html =~ /Flex/i) != nil and (html =~ /<div\s+class=\"MainContent\">/i) != nil then
+        if (html =~ /<div\s+class=\"MainContent\">/i) != nil then
             return true
         end
     end
