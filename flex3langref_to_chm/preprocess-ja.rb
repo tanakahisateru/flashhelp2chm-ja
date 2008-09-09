@@ -65,7 +65,7 @@ def convertFile(orgpath, targetpath)
                 $1 + "\n" + $2 + "\n" + $3
             }
             text.gsub!(/([^\n])(\s*-->)\n?(<\/script>)/m){|hit|
-                $1 + "\n" + $2 + "\n" + $3
+                $1 + "\n//" + $2 + "\n" + $3
             }
             
         end
