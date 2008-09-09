@@ -59,6 +59,15 @@ def convertFile(orgpath, targetpath)
             text.gsub!(/<!--BEGIN IONCOMMENTS-->.*(<\/body><\/html>)/m){|hit|
                 $1
             }
+            
+            #fix buggy script tag
+            text.gsub!(/(<script .*?>)\n?(<\!--\s*)([^\n])/m){|hit|
+                $1 + "\n" + $2 + "\n" + $3
+            }
+            text.gsub!(/([^\n])(\s*-->)\n?(<\/script>)/m){|hit|
+                $1 + "\n" + $2 + "\n" + $3
+            }
+            
         end
         open(targetpath, 'w') do |fout|
             fout.write(text)
